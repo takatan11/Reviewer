@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>授業詳細</title>
+</head>
+<body>
+<h1 th:text="${course.className}">授業名</h1>
+
+<ul>
+    <li><strong>ID:</strong> <span th:text="${course.id}">1</span></li>
+    <li><strong>学部:</strong> <span th:text="${course.faculty}">学部</span></li>
+    <li><strong>先生:</strong> <span th:text="${course.teacher}">担当教員</span></li>
+    <li><strong>曜日:</strong> <span th:text="${course.dayOfclass}">授業の曜日</span></li>
+    <li><strong>概要:</strong> <p th:text="${course.description}">授業の概要</p></li>
+</ul>
+
+<p><a th:href="@{/}">一覧に戻る</a></p>
+</body>
+</html>
+

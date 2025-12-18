@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>授業評価一覧</title>
+</head>
+<body>
+<h1>登録されている授業一覧</h1>
+
+<!-- 授業リストを表示するテーブル -->
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>授業名</th>
+        <th>先生</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- ここでControllerから渡された "courses" をループして表示します -->
+    <tr th:each="course : ${courses}">
+        <td th:text="${course.id}">1</td>
+
+        <!-- ▼▼ 修正箇所：変数を className に直し、リンクを追加しました ▼▼ -->
+        <td>
+            <a th:href="@{/course/{id}(id=${course.id})}" th:text="${course.className}">
+                授業名
+            </a>
+        </td>
+
+        <!-- ▼▼ 修正箇所：変数を teacher に直しました ▼▼ -->
+        <td th:text="${course.teacher}">佐藤教授</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
