@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>授業詳細</title>
@@ -15,7 +15,29 @@
     <li><strong>概要:</strong> <p th:text="${course.description}">授業の概要</p></li>
 </ul>
 
+<h2>コメント一覧</h2>
+<ul>
+    <li th:each="review : ${reviews}">
+        <strong th:text="${review.reviewer}">投稿者</strong>:
+        <span th:text="${review.comment}">コメント内容</span>
+        (<span th:text="${review.score}">スコア</span>)
+    </li>
+</ul>
+
+<h2>コメントを投稿する</h2>
+<form th:action="@{/course/{id}/review(id=${course.id})}" method="post">
+    <label for="reviewer">名前:</label>
+    <input type="text" id="reviewer" name="reviewer" required>
+
+    <label for="score">スコア:</label>
+    <input type="number" id="score" name="score" min="1" max="5" required>
+
+    <label for="comment">コメント:</label>
+    <textarea id="comment" name="comment" required></textarea>
+
+    <button type="submit">投稿</button>
+</form>
+
 <p><a th:href="@{/}">一覧に戻る</a></p>
 </body>
 </html>
-
