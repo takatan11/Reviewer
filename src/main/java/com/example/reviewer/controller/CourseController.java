@@ -28,13 +28,13 @@ public class CourseController {
 
     @GetMapping("/")
     public String listCourses(Model model) {
-        List<Course> courseList = courseRepository.findAll();
-        // ID を UI 表示せずリンク生成にのみ使うため DTO に詰め替え
+        List<Course> courseList = courseRepository.findAll();//データベースから情報をすべて取ってくる
+        // ID を UI 表示せずリンク生成にのみ使うため取ってきた情報を DTO に詰め替える
         List<CourseDTO> courseDTOList = courseList.stream()
-                .map(c -> new CourseDTO(c.getId(), c.getFaculty(), c.getClassName(), c.getTeacher(), c.getDayOfclass(), c.getDescription()))//元のCourseデータを新しいデータの箱であるCourseDTOに詰め替えている
+                .map(c -> new CourseDTO(c.getId(), c.getFaculty(), c.getClassName(), c.getTeacher(), c.getDayOfclass(), c.getDescription()))
                 .collect(Collectors.toList());
 
-        model.addAttribute("courses", courseDTOList);
+        model.addAttribute("courses", courseDTOList);//詰め替えた情報を画面に表示するHTMLに渡すかごに入れる
 
         return "list";
     }

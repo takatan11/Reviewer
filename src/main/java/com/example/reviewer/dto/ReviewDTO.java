@@ -13,4 +13,3 @@ public class ReviewDTO {
     private String comment;
     private String createdAt; // 表示用にフォーマット済みの日時文字列を保持
 }
-
