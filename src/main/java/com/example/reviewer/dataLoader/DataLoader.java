@@ -16,7 +16,7 @@ public class DataLoader implements CommandLineRunner {
         if (courseRepository.count()>0){
             return;
         }
-        Course c1=new Course(null,"学部","授業の名前","担当教員","授業の曜日","授業の概要");
+        Course c1=new Course(null,"教育学部","体育","上田","毎週水曜日","体を動かす");
         Course c2=new Course(null,"工学部","線形代数","田中","毎週月曜日","線形代数の基礎を学ぶ");
         //Courseからインスタンスを作成した
         courseRepository.save(c1);//デモ用に作成したc1のデータを保存する

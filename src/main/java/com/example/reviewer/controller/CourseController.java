@@ -1,5 +1,7 @@
 package com.example.reviewer.controller;
 
+import com.example.reviewer.dto.CourseDTO;
+import com.example.reviewer.dto.ReviewDTO;
 import com.example.reviewer.entity.Course;
 import com.example.reviewer.entity.Review;
 import com.example.reviewer.repository.CourseRepository;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,8 +29,12 @@ public class CourseController {
     @GetMapping("/")
     public String listCourses(Model model) {
         List<Course> courseList = courseRepository.findAll();
+        // ID を UI 表示せずリンク生成にのみ使うため DTO に詰め替え
+        List<CourseDTO> courseDTOList = courseList.stream()
+                .map(c -> new CourseDTO(c.getId(), c.getFaculty(), c.getClassName(), c.getTeacher(), c.getDayOfclass(), c.getDescription()))//元のCourseデータを新しいデータの箱であるCourseDTOに詰め替えている
+                .collect(Collectors.toList());
 
-        model.addAttribute("courses", courseList);
+        model.addAttribute("courses", courseDTOList);
 
         return "list";
     }
@@ -38,11 +46,16 @@ public class CourseController {
             return "redirect:/";
         }
         var course = courseOpt.get();
-        model.addAttribute("course", course);
+        // 詳細画面も DTO に詰め替え
+        CourseDTO courseDTO = new CourseDTO(course.getId(), course.getFaculty(), course.getClassName(), course.getTeacher(), course.getDayOfclass(), course.getDescription());
+        model.addAttribute("course", courseDTO);
 
-        // コメント一覧を取得してモデルに追加
         var reviews = reviewRepository.findByCourseId(id);
-        model.addAttribute("reviews", reviews);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        List<ReviewDTO> reviewDTOList = reviews.stream()
+                .map(r -> new ReviewDTO(r.getReviewer(), r.getScore(), r.getComment(), r.getCreatedAt().format(formatter)))
+                .collect(Collectors.toList());
+        model.addAttribute("reviews", reviewDTOList);
 
         return "course";
     }

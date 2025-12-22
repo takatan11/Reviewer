@@ -8,7 +8,6 @@
 <h1 th:text="${course.className}">授業名</h1>
 
 <ul>
-    <li><strong>ID:</strong> <span th:text="${course.id}">1</span></li>
     <li><strong>学部:</strong> <span th:text="${course.faculty}">学部</span></li>
     <li><strong>先生:</strong> <span th:text="${course.teacher}">担当教員</span></li>
     <li><strong>曜日:</strong> <span th:text="${course.dayOfclass}">授業の曜日</span></li>
@@ -21,6 +20,7 @@
         <strong th:text="${review.reviewer}">投稿者</strong>:
         <span th:text="${review.comment}">コメント内容</span>
         (<span th:text="${review.score}">スコア</span>)
+        <span th:text="${review.createdAt}" style="margin-left:8px;color:#666;"></span>
     </li>
 </ul>
 
