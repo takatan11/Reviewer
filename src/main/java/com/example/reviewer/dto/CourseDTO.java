@@ -1,5 +1,6 @@
 package com.example.reviewer.dto;
 
+import com.example.reviewer.entity.Faculty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CourseDTO {
     private Long id; // 画面表示には使わないがリンク生成に必要
-    private String faculty;
+    private Faculty faculty;
     private String className;
     private String teacher;
     private String dayOfclass;

@@ -13,20 +13,18 @@
     <tr>
         <th>授業名</th>
         <th>先生</th>
+        <th>学部</th>
     </tr>
     </thead>
     <tbody>
-    <!-- ここでControllerから渡された "courses" をループして表示します -->
     <tr th:each="course : ${courses}">
         <td>
-            <!-- ▼▼ 修正箇所：リンクを追加しました ▼▼ -->
             <a th:href="@{/course/{id}(id=${course.id})}" th:text="${course.className}">
                 授業名
             </a>
         </td>
-
-        <!-- ▼▼ 修正箇所：変数を teacher に直しました ▼▼ -->
         <td th:text="${course.teacher}">担当教員</td>
+        <td th:text="${course.faculty.displayName}">学部</td>
     </tr>
     </tbody>
 </table>

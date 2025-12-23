@@ -1,9 +1,14 @@
+/*このファイルはHTMLにデータを渡している。トップページのスタイル、詳細ページのスタイル、レビュー投稿を表示する、の機能が実装されている。
+さらに、ＤＴＯを使用することで必要なデータのみまとめてＨＴＭＬ側に渡すことができるようになっている。*/
+
+
 package com.example.reviewer.controller;
 
 import com.example.reviewer.dto.CourseDTO;
 import com.example.reviewer.dto.ReviewDTO;
 import com.example.reviewer.entity.Course;
 import com.example.reviewer.entity.Review;
+import com.example.reviewer.entity.Faculty;
 import com.example.reviewer.repository.CourseRepository;
 import com.example.reviewer.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,52 +30,50 @@ public class CourseController {
 
     private final CourseRepository courseRepository;
     private final ReviewRepository reviewRepository;
+//URLによって違うページにアクセスするようになっている
 
-    @GetMapping("/")
+    @GetMapping("/")//URLがトップページのとき
     public String listCourses(Model model) {
         List<Course> courseList = courseRepository.findAll();//データベースから情報をすべて取ってくる
-        // ID を UI 表示せずリンク生成にのみ使うため取ってきた情報を DTO に詰め替える
         List<CourseDTO> courseDTOList = courseList.stream()
                 .map(c -> new CourseDTO(c.getId(), c.getFaculty(), c.getClassName(), c.getTeacher(), c.getDayOfclass(), c.getDescription()))
                 .collect(Collectors.toList());
-
         model.addAttribute("courses", courseDTOList);//詰め替えた情報を画面に表示するHTMLに渡すかごに入れる
-
+        model.addAttribute("faculties", Faculty.values());
         return "list";
     }
 
-    @GetMapping("/course/{id}")
+    @GetMapping("/course/{id}")//URLが/course/{id}のとき
     public String showCourse(@PathVariable Long id, Model model) {
-        var courseOpt = courseRepository.findById(id);
+        var courseOpt = courseRepository.findById(id);//データベースからidに該当する情報を取ってくる
         if (courseOpt.isEmpty()) {
-            return "redirect:/";
+            return "redirect:/"; // 該当するコースがない場合はトップページにリダイレクト
         }
-        var course = courseOpt.get();
-        // 詳細画面も DTO に詰め替え
-        CourseDTO courseDTO = new CourseDTO(course.getId(), course.getFaculty(), course.getClassName(), course.getTeacher(), course.getDayOfclass(), course.getDescription());
+        var course = courseOpt.get();//該当する情報をcourseに入れる
+        CourseDTO courseDTO = new CourseDTO(course.getId(), course.getFaculty(), course.getClassName(), course.getTeacher(), course.getDayOfclass(), course.getDescription());//これが使用できるのはCourseDTOクラスのなかでコンストラクタを定義しているから
         model.addAttribute("course", courseDTO);
 
-        var reviews = reviewRepository.findByCourseId(id);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+        var reviews = reviewRepository.findByCourseId(id);//該当するコースに紐づく口コミ情報を取ってくる
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");//口コミの日時表示のフォーマットを指定
         List<ReviewDTO> reviewDTOList = reviews.stream()
                 .map(r -> new ReviewDTO(r.getReviewer(), r.getScore(), r.getComment(), r.getCreatedAt().format(formatter)))
                 .collect(Collectors.toList());
-        model.addAttribute("reviews", reviewDTOList);
-
+        model.addAttribute("reviews", reviewDTOList);//レビューDTOの情報もかごに入れる
+        model.addAttribute("faculties", Faculty.values());
         return "course";
     }
 
-    @PostMapping("/course/{id}/review")
+    @PostMapping("/course/{id}/review")//URLが/course/{id}/reviewのとき
     public String addReview(@PathVariable Long id, @RequestParam String reviewer, @RequestParam int score, @RequestParam String comment) {
-        var courseOpt = courseRepository.findById(id);
+        var courseOpt = courseRepository.findById(id);//データベースからidに該当する情報を取ってくる
         if (courseOpt.isEmpty()) {
-            return "redirect:/";
+            return "redirect:/";// 該当するコースがない場合はトップページにリダイレクト
         }
-        var course = courseOpt.get();
+        var course = courseOpt.get();//該当する情報をcourseに入れる
 
         // 新しいレビューを作成して保存
-        Review review = new Review();
-        review.setReviewer(reviewer);
+        Review review = new Review();//新しいレビュー情報を入れる箱を作成
+        review.setReviewer(reviewer);//レビュー情報を箱に入れる
         review.setScore(score);
         review.setComment(comment);
         review.setCreatedAt(LocalDateTime.now());
@@ -80,3 +83,4 @@ public class CourseController {
         return "redirect:/course/" + id;
     }
 }
+

@@ -1,3 +1,4 @@
+/*コメントの一覧をHTMLで表示するためだけの専用の箱*/
 package com.example.reviewer.dto;
 
 import lombok.AllArgsConstructor;

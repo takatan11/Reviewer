@@ -16,8 +16,8 @@ public class Course {
     private Long id;//自動でidを振ってくれる
 
     @Column(nullable = false)
-
-    private String faculty;//学部
+    @Enumerated(EnumType.STRING)
+    private Faculty faculty;//学部
 
     private String className;//授業の名前
 
