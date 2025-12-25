@@ -14,6 +14,7 @@
         <th>授業名</th>
         <th>先生</th>
         <th>学部</th>
+        <th>曜日</th>
     </tr>
     </thead>
     <tbody>
@@ -25,6 +26,7 @@
         </td>
         <td th:text="${course.teacher}">担当教員</td>
         <td th:text="${course.faculty.displayName}">学部</td>
+        <td th:text="${course.dayOfClass.displayName}">曜日</td>
     </tr>
     </tbody>
 </table>

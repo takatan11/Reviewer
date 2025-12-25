@@ -1,3 +1,5 @@
+/*courceという名前のテーブルをデータベースの上に作成している*/
+
 package com.example.reviewer.entity;
 
 import jakarta.persistence.*;
@@ -23,7 +25,9 @@ public class Course {
 
     private String teacher;//担当教員
 
-    private String dayOfclass;//授業の曜日
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DayOfClass dayOfClass;//授業の曜日
 
     @Column(length=1000)
     private String description; //授業の概要

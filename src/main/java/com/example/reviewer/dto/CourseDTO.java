@@ -1,6 +1,7 @@
 package com.example.reviewer.dto;
 
 import com.example.reviewer.entity.Faculty;
+import com.example.reviewer.entity.DayOfClass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,6 @@ public class CourseDTO {
     private Faculty faculty;
     private String className;
     private String teacher;
-    private String dayOfclass;
+    private DayOfClass dayOfClass;
     private String description;
 }

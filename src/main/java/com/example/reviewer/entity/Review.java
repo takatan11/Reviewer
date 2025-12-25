@@ -1,3 +1,5 @@
+/*一つ一つの授業に紐づいたコメント用のテーブル*/
+
 package com.example.reviewer.entity;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;

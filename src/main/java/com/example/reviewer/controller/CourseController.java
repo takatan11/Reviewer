@@ -36,7 +36,7 @@ public class CourseController {
     public String listCourses(Model model) {
         List<Course> courseList = courseRepository.findAll();//データベースから情報をすべて取ってくる
         List<CourseDTO> courseDTOList = courseList.stream()
-                .map(c -> new CourseDTO(c.getId(), c.getFaculty(), c.getClassName(), c.getTeacher(), c.getDayOfclass(), c.getDescription()))
+                .map(c -> new CourseDTO(c.getId(), c.getFaculty(), c.getClassName(), c.getTeacher(), c.getDayOfClass(), c.getDescription()))
                 .collect(Collectors.toList());
         model.addAttribute("courses", courseDTOList);//詰め替えた情報を画面に表示するHTMLに渡すかごに入れる
         model.addAttribute("faculties", Faculty.values());
@@ -50,7 +50,7 @@ public class CourseController {
             return "redirect:/"; // 該当するコースがない場合はトップページにリダイレクト
         }
         var course = courseOpt.get();//該当する情報をcourseに入れる
-        CourseDTO courseDTO = new CourseDTO(course.getId(), course.getFaculty(), course.getClassName(), course.getTeacher(), course.getDayOfclass(), course.getDescription());//これが使用できるのはCourseDTOクラスのなかでコンストラクタを定義しているから
+        CourseDTO courseDTO = new CourseDTO(course.getId(), course.getFaculty(), course.getClassName(), course.getTeacher(), course.getDayOfClass(), course.getDescription());//これが使用できるのはCourseDTOクラスのなかでコンストラクタを定義しているから
         model.addAttribute("course", courseDTO);
 
         var reviews = reviewRepository.findByCourseId(id);//該当するコースに紐づく口コミ情報を取ってくる
@@ -83,4 +83,3 @@ public class CourseController {
         return "redirect:/course/" + id;
     }
 }
-

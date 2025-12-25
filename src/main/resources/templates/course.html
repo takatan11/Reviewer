@@ -10,7 +10,7 @@
 <ul>
     <li><strong>学部:</strong> <span th:text="${course.faculty.displayName}">学部</span></li>
     <li><strong>先生:</strong> <span th:text="${course.teacher}">担当教員</span></li>
-    <li><strong>曜日:</strong> <span th:text="${course.dayOfclass}">授業の曜日</span></li>
+    <li><strong>曜日:</strong> <span th:text="${course.dayOfClass.displayName}">授業の曜日</span></li>
     <li><strong>概要:</strong> <p th:text="${course.description}">授業の概要</p></li>
 </ul>
 
