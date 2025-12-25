@@ -19,7 +19,6 @@ public enum DayOfClass {
     public String getDisplayName() {
         return displayName;//書き換えられないdisplaynameを取得するためのメソッド
     }
-
     @Override
     public String toString() {
         return displayName; //画面表示のときに""の中身の曜日をMondayなどから月曜日などに表示する変換をするために使われる
