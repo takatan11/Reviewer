@@ -7,9 +7,11 @@ import lombok.Data;
 
 @Data
 public class CourseSearchForm {
-    private Faculty faculty;
+    private Faculty faculty;//入力フォームで選択された学部をfaculty変数に入れる。入れられるのはFaculty.javaの中にある学部名のみ
 
-    private String className;
+    private String className;//入力フォームで入力された授業名をclassName変数に入れる
 
-    private DayOfClass dayOfClass;
+    private DayOfClass dayOfClass;//入力フォームで選択された授業曜日をdayOfClass変数に入れる
+
+    private String teacher;//入力フォームで入力された担当教員名をteacher変数に入れる
 }

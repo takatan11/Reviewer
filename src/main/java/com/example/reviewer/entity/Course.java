@@ -1,4 +1,4 @@
-/*courceという名前のテーブルをデータベースの上に作成している*/
+/*courceという名前のテーブルをデータベースの上に作成している。下にカラムの設定もしてある*/
 
 package com.example.reviewer.entity;
 
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name="course")
+@Table(name="course")//テーブルの名前
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

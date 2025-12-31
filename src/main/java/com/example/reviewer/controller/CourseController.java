@@ -38,7 +38,7 @@ public class CourseController {
         List<CourseDTO> courseDTOList = courseList.stream()
                 .map(c -> new CourseDTO(c.getId(), c.getFaculty(), c.getClassName(), c.getTeacher(), c.getDayOfClass(), c.getDescription()))
                 .collect(Collectors.toList());
-        model.addAttribute("courses", courseDTOList);//詰め替えた情報を画面に表示するHTMLに渡すかごに入れる
+        model.addAttribute("courses", courseDTOList);//DTOで詰め替えた情報を画面に表示するHTMLに渡すかごに入れる
         model.addAttribute("faculties", Faculty.values());
         return "list";
     }
@@ -64,8 +64,12 @@ public class CourseController {
     }
 
     @PostMapping("/course/{id}/review")//URLが/course/{id}/reviewのとき
-    public String addReview(@PathVariable Long id, @RequestParam String reviewer, @RequestParam int score, @RequestParam String comment) {
-        var courseOpt = courseRepository.findById(id);//データベースからidに該当する情報を取ってくる
+    public String addReview(
+            @PathVariable Long id, //URLのid部分を取得してどの授業に関するレビューかを特定する
+            @RequestParam String reviewer,//HTMLのフォームで入力されたレビュー情報をそれぞれ受け取ってrevierwer,score,commentに入れる
+            @RequestParam int score,
+            @RequestParam String comment) {
+        var courseOpt = courseRepository.findById(id);//データベースからidに該当する情報を取ってくる。授業名や講師名など
         if (courseOpt.isEmpty()) {
             return "redirect:/";// 該当するコースがない場合はトップページにリダイレクト
         }
@@ -74,12 +78,12 @@ public class CourseController {
         // 新しいレビューを作成して保存
         Review review = new Review();//新しいレビュー情報を入れる箱を作成
         review.setReviewer(reviewer);//レビュー情報を箱に入れる
-        review.setScore(score);
-        review.setComment(comment);
-        review.setCreatedAt(LocalDateTime.now());
-        review.setCourse(course);
-        reviewRepository.save(review);
+        review.setScore(score);//ユーザーが決めたスコアをいれる
+        review.setComment(comment);//コメントを入れる
+        review.setCreatedAt(LocalDateTime.now());//レビューが作成された日時を入れる
+        review.setCourse(course);//保存するときに自動的に「あ、このレビューはcourse_id=5なんだ」と判断してDBに5を書き込んでくれる
+        reviewRepository.save(review);//レビュー情報をデータベースに保存する
 
-        return "redirect:/course/" + id;
+        return "redirect:/course/" + id;//レビュー投稿直後に自動でリロードして最新のレビューを表示するようにしている
     }
 }

@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>授業評価一覧</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f5f5f5; }
+    </style>
 </head>
 <body>
 <h1>登録されている授業一覧</h1>
 
 <!-- 授業リストを表示するテーブル -->
-<table border="1">
+<table>
     <thead>
     <tr>
         <th>授業名</th>
@@ -20,11 +25,11 @@
     <tbody>
     <tr th:each="course : ${courses}">
         <td>
-            <a th:href="@{/course/{id}(id=${course.id})}" th:text="${course.className}">
+            <a th:href="@{/course/{id}(id=${course.id})}" th:text="${course.className}">　　　<!-- ｛id｝にはcourceのidが代入される。textにはcourseの名前が代入される。いまtextは「授業名」という文字列が設定されている。ここが変わる-->
                 授業名
             </a>
         </td>
-        <td th:text="${course.teacher}">担当教員</td>
+        <td th:text="${course.teacher}">担当教員</td>　　　　　　　<!--同様に「担当教員」の部分にそれぞれの授業の教授名が代入されて表示される-->
         <td th:text="${course.faculty.displayName}">学部</td>
         <td th:text="${course.dayOfClass.displayName}">曜日</td>
     </tr>
