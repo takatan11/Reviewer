@@ -9,6 +9,7 @@ import com.example.reviewer.dto.ReviewDTO;
 import com.example.reviewer.entity.Course;
 import com.example.reviewer.entity.Review;
 import com.example.reviewer.entity.Faculty;
+import com.example.reviewer.form.CourseSearchForm;
 import com.example.reviewer.repository.CourseRepository;
 import com.example.reviewer.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +34,20 @@ public class CourseController {
 //URLによって違うページにアクセスするようになっている
 
     @GetMapping("/")//URLがトップページのとき
-    public String listCourses(Model model) {
-        List<Course> courseList = courseRepository.findAll();//データベースから情報をすべて取ってくる
+    public String listCourses(Model model,CourseSearchForm form) {//ModelはHTMLにデータを渡すためのかご
+        List<Course> courseList = courseRepository.search(
+                form.getFaculty(),
+                form.getClassName(),
+                form.getDayOfClass(),
+                form.getTeacher()
+        );//CourseRepositoryデータベースから情報をすべて取ってくる
         List<CourseDTO> courseDTOList = courseList.stream()
                 .map(c -> new CourseDTO(c.getId(), c.getFaculty(), c.getClassName(), c.getTeacher(), c.getDayOfClass(), c.getDescription()))
                 .collect(Collectors.toList());
-        model.addAttribute("courses", courseDTOList);//DTOで詰め替えた情報を画面に表示するHTMLに渡すかごに入れる
+        model.addAttribute("courses", courseDTOList);//DTOで詰め替えた情報を画面に表示するHTMLに渡すmodelという名前のかごに入れる。名前はcourses
         model.addAttribute("faculties", Faculty.values());
+        model.addAttribute("daysOfClass", com.example.reviewer.entity.DayOfClass.values());
+        model.addAttribute("courseSearchForm", form);
         return "list";
     }
 

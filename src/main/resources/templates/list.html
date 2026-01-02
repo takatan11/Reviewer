@@ -1,39 +1,119 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>授業評価一覧</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>授業検索システム</title>
+    <!-- デザインを整えるためのTailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- フォントをGoogle Fontsから読み込み (Noto Sans JP) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background: #f5f5f5; }
+        body { font-family: 'Noto Sans JP', sans-serif; }
     </style>
 </head>
-<body>
-<h1>登録されている授業一覧</h1>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center pt-20 px-4">
 
-<!-- 授業リストを表示するテーブル -->
-<table>
-    <thead>
-    <tr>
-        <th>授業名</th>
-        <th>先生</th>
-        <th>学部</th>
-        <th>曜日</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="course : ${courses}">
-        <td>
-            <a th:href="@{/course/{id}(id=${course.id})}" th:text="${course.className}">　　　<!-- ｛id｝にはcourceのidが代入される。textにはcourseの名前が代入される。いまtextは「授業名」という文字列が設定されている。ここが変わる-->
-                授業名
-            </a>
-        </td>
-        <td th:text="${course.teacher}">担当教員</td>　　　　　　　<!--同様に「担当教員」の部分にそれぞれの授業の教授名が代入されて表示される-->
-        <td th:text="${course.faculty.displayName}">学部</td>
-        <td th:text="${course.dayOfClass.displayName}">曜日</td>
-    </tr>
-    </tbody>
-</table>
+<!-- メインタイトル -->
+<h1 class="text-4xl font-bold text-gray-700 mb-8 tracking-wide">
+    <span class="text-blue-500">Course</span> Search
+</h1>
+
+<!-- 検索フォームエリア -->
+<div class="w-full max-w-3xl">
+    <form th:action="@{/}" method="get" th:object="${courseSearchForm}" class="space-y-4">
+
+        <!-- メイン検索バー（授業名） -->
+        <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <!-- 虫眼鏡アイコン -->
+                <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+            <input type="text" th:field="*{className}"
+                   class="block w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-full shadow-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-300 placeholder-gray-400"
+                   placeholder="授業名で検索（例：線形代数）">
+        </div>
+
+        <!-- サブフィルター（先生・学部・曜日） -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            <!-- 先生名 -->
+            <div class="flex flex-col">
+                <label class="text-xs text-gray-500 font-bold mb-1 ml-1">先生の名前</label>
+                <input type="text" th:field="*{teacher}"
+                       class="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded-lg py-2 px-3 focus:outline-none focus:bg-white focus:border-blue-500 transition"
+                       placeholder="田中">
+            </div>
+
+            <!-- 学部（プルダウン） -->
+            <div class="flex flex-col">
+                <label class="text-xs text-gray-500 font-bold mb-1 ml-1">学部</label>
+                <select th:field="*{faculty}"
+                        class="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded-lg py-2 px-3 focus:outline-none focus:bg-white focus:border-blue-500 transition appearance-none cursor-pointer">
+                    <option value="">すべての学部</option>
+                    <option th:each="item : ${faculties}"
+                            th:value="${item.name()}"
+                            th:text="${item.displayName}"></option>
+                </select>
+            </div>
+
+            <!-- 曜日（プルダウン） -->
+            <div class="flex flex-col">
+                <label class="text-xs text-gray-500 font-bold mb-1 ml-1">曜日</label>
+                <select th:field="*{dayOfClass}"
+                        class="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded-lg py-2 px-3 focus:outline-none focus:bg-white focus:border-blue-500 transition appearance-none cursor-pointer">
+                    <option value="">すべての曜日</option>
+                    <option th:each="item : ${daysOfClass}"
+                            th:value="${item.name()}"
+                            th:text="${item.displayName}"></option> <!-- EnumにdisplayNameがない場合は .name() -->
+                </select>
+            </div>
+        </div>
+
+        <!-- 検索ボタン -->
+        <div class="text-center mt-6">
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transform hover:-translate-y-0.5 transition duration-200">
+                検索する
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- 検索結果エリア -->
+<div class="w-full max-w-5xl mt-16 mb-20">
+    <!-- 件数表示 -->
+    <p class="text-gray-500 text-center mb-6" th:if="${courses.size() > 0}">
+        <span class="font-bold text-gray-800" th:text="${courses.size()}">0</span> 件の授業が見つかりました
+    </p>
+
+    <!-- 結果なしの場合 -->
+    <div th:if="${courses.isEmpty()}" class="text-center py-10 bg-white rounded-xl shadow-sm">
+        <p class="text-gray-400 text-lg">条件に一致する授業は見つかりませんでした。</p>
+    </div>
+
+    <!-- 結果ボタン（カード）一覧 -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- 授業ボタン -->
+        <a th:each="course : ${courses}"
+           th:href="@{/course/{id}(id=${course.id})}"
+           class="group block bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-blue-300 transition duration-300 flex flex-col items-center justify-center text-center h-40 relative overflow-hidden">
+
+            <!-- ホバー時の背景エフェクト -->
+            <div class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+
+            <!-- 授業名 -->
+            <span class="relative z-10 text-lg font-bold text-gray-800 group-hover:text-blue-600 transition"
+                  th:text="${course.className}">授業名</span>
+
+            <!-- 補足情報（小さく表示） -->
+            <span class="relative z-10 text-xs text-gray-500 mt-2 bg-gray-100 px-2 py-1 rounded-md"
+                  th:text="${course.faculty.displayName}">学部</span>
+        </a>
+    </div>
+</div>
+
 </body>
 </html>
