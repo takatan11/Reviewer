@@ -9,6 +9,8 @@ import com.example.reviewer.dto.ReviewDTO;
 import com.example.reviewer.entity.Course;
 import com.example.reviewer.entity.Review;
 import com.example.reviewer.entity.Faculty;
+import com.example.reviewer.form.CourseForm;
+import com.example.reviewer.entity.DayOfClass;
 import com.example.reviewer.form.CourseSearchForm;
 import com.example.reviewer.form.ReviewForm;
 import com.example.reviewer.repository.CourseRepository;
@@ -18,10 +20,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +40,7 @@ public class CourseController {
 
     @GetMapping("/")//URLがトップページのとき
     public String listCourses(Model model,CourseSearchForm form) {//ModelはHTMLにデータを渡すためのかご
-        List<Course> courseList = courseRepository.search(
+        List<Course> courseList = courseRepository.search(//検索機能
                 form.getFaculty(),
                 form.getClassName(),
                 form.getDayOfClass(),
@@ -72,6 +74,9 @@ public class CourseController {
         model.addAttribute("reviews", reviewDTOList);//レビューDTOの情報もかごに入れる
         model.addAttribute("faculties", Faculty.values());
         model.addAttribute("reviewForm", new ReviewForm()); // フォームの初期化
+        double averageScore = reviews.isEmpty() ? 0.0 : Math.round(reviews.stream().mapToInt(Review::getScore).average().orElse(0.0) * 10) / 10.0;
+        model.addAttribute("averageScore", averageScore);
+        model.addAttribute("reviewCount", reviews.size());
         return "course";
     }
 
@@ -100,8 +105,12 @@ public class CourseController {
             model.addAttribute("reviews", reviewDTOList);
             model.addAttribute("faculties", Faculty.values());
             model.addAttribute("reviewForm", reviewForm);
+            double averageScore = reviews.isEmpty() ? 0.0 : Math.round(reviews.stream().mapToInt(Review::getScore).average().orElse(0.0) * 10) / 10.0;
+            model.addAttribute("averageScore", averageScore);
+            model.addAttribute("reviewCount", reviews.size());
             return "course";
         }
+
 
         // 新しいレビューを作成して保存
         Review review = new Review();//新しいレビュー情報を入れる箱を作成
@@ -113,5 +122,29 @@ public class CourseController {
         reviewRepository.save(review);//レビュー情報をデータベースに保存する
 
         return "redirect:/course/" + id;//レビュー投稿直後に自動でリロードして最新のレビューを表示するようにしている
+    }
+    @GetMapping("/course/new")
+    public String showCreateCourseForm(Model model){
+        model.addAttribute("courseForm", new CourseForm());
+        model.addAttribute("faculties", Faculty.values());
+        model.addAttribute("daysOfClass", DayOfClass.values());
+        return "create";
+    }
+
+    @PostMapping("/course/new")
+    public String inputCourse(@Validated CourseForm form, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("faculties",Faculty.values());
+            model.addAttribute("daysOfClass", DayOfClass.values());
+            return "create";
+        }
+        Course course = new Course();
+        course.setClassName(form.getClassName());
+        course.setTeacher(form.getTeacher());
+        course.setFaculty(form.getFaculty());
+        course.setDayOfClass(form.getDayOfClass());
+        course.setDescription(form.getDescription());
+        courseRepository.save(course);
+        return "redirect:/";
     }
 }

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>授業検索システム</title>
-    <!-- デザインを整えるためのTailwind CSS (CDN) -->
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- フォントをGoogle Fontsから読み込み (Noto Sans JP) -->
+    <!-- Google Fonts (Noto Sans JP) -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans JP', sans-serif; }
@@ -14,12 +14,12 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col items-center pt-20 px-4">
 
-<!-- メインタイトル -->
+<!-- 1. メインタイトル -->
 <h1 class="text-4xl font-bold text-gray-700 mb-8 tracking-wide">
     <span class="text-blue-500">Course</span> Search
 </h1>
 
-<!-- 検索フォームエリア -->
+<!-- 2. 検索フォームエリア -->
 <div class="w-full max-w-3xl">
     <form th:action="@{/}" method="get" th:object="${courseSearchForm}" class="space-y-4">
 
@@ -53,6 +53,7 @@
                 <select th:field="*{faculty}"
                         class="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded-lg py-2 px-3 focus:outline-none focus:bg-white focus:border-blue-500 transition appearance-none cursor-pointer">
                     <option value="">すべての学部</option>
+                    <!-- ★重要: th:value="${item.name()}" で定数名を渡す -->
                     <option th:each="item : ${faculties}"
                             th:value="${item.name()}"
                             th:text="${item.displayName}"></option>
@@ -65,9 +66,10 @@
                 <select th:field="*{dayOfClass}"
                         class="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded-lg py-2 px-3 focus:outline-none focus:bg-white focus:border-blue-500 transition appearance-none cursor-pointer">
                     <option value="">すべての曜日</option>
-                    <option th:each="item : ${daysOfClass}"
+                    <!-- ★重要: ここも th:value="${item.name()}" -->
+                    <option th:each="item : ${daysOfWeek}"
                             th:value="${item.name()}"
-                            th:text="${item.displayName}"></option> <!-- EnumにdisplayNameがない場合は .name() -->
+                            th:text="${item.displayName}"></option>
                 </select>
             </div>
         </div>
@@ -82,15 +84,31 @@
     </form>
 </div>
 
-<!-- 検索結果エリア -->
-<div class="w-full max-w-5xl mt-16 mb-20">
+<!-- 3. 新規登録ボタンエリア (検索フォームの下に追加) -->
+<div class="w-full max-w-3xl flex justify-end mt-4 px-2">
+    <a th:href="@{/course/new}"
+       class="group flex items-center text-blue-600 font-bold hover:text-blue-800 transition duration-200">
+        <!-- プラスアイコン -->
+        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 group-hover:bg-blue-200 mr-2 transition duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+        </div>
+        <span class="border-b-2 border-transparent group-hover:border-blue-800">
+            新しい授業を登録する
+        </span>
+    </a>
+</div>
+
+<!-- 4. 検索結果エリア -->
+<div class="w-full max-w-5xl mt-12 mb-20">
     <!-- 件数表示 -->
     <p class="text-gray-500 text-center mb-6" th:if="${courses.size() > 0}">
         <span class="font-bold text-gray-800" th:text="${courses.size()}">0</span> 件の授業が見つかりました
     </p>
 
     <!-- 結果なしの場合 -->
-    <div th:if="${courses.isEmpty()}" class="text-center py-10 bg-white rounded-xl shadow-sm">
+    <div th:if="${courses.isEmpty()}" class="text-center py-10 bg-white rounded-xl shadow-sm border border-gray-100">
         <p class="text-gray-400 text-lg">条件に一致する授業は見つかりませんでした。</p>
     </div>
 
@@ -108,7 +126,7 @@
             <span class="relative z-10 text-lg font-bold text-gray-800 group-hover:text-blue-600 transition"
                   th:text="${course.className}">授業名</span>
 
-            <!-- 補足情報（小さく表示） -->
+            <!-- 補足情報（学部） -->
             <span class="relative z-10 text-xs text-gray-500 mt-2 bg-gray-100 px-2 py-1 rounded-md"
                   th:text="${course.faculty.displayName}">学部</span>
         </a>
