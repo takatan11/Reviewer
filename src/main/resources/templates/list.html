@@ -67,7 +67,7 @@
                         class="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded-lg py-2 px-3 focus:outline-none focus:bg-white focus:border-blue-500 transition appearance-none cursor-pointer">
                     <option value="">すべての曜日</option>
                     <!-- ★重要: ここも th:value="${item.name()}" -->
-                    <option th:each="item : ${daysOfWeek}"
+                    <option th:each="item : ${daysOfClass}"
                             th:value="${item.name()}"
                             th:text="${item.displayName}"></option>
                 </select>

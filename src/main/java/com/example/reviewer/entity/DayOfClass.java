@@ -1,5 +1,8 @@
 package com.example.reviewer.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum DayOfClass {
     MONDAY("月曜日"),
     TUESDAY("火曜日"),
@@ -9,6 +12,7 @@ public enum DayOfClass {
     SATURDAY("土曜日"),
     SUNDAY("日曜日");
 
+    //書き換えられないdisplaynameを取得するためのメソッド
     private final String displayName;//勝手に書き換えられないようにprivate型になっている
 
     DayOfClass(String displayName) {
@@ -16,9 +20,6 @@ public enum DayOfClass {
         this.displayName = displayName;
     }
 
-    public String getDisplayName() {
-        return displayName;//書き換えられないdisplaynameを取得するためのメソッド
-    }
     @Override
     public String toString() {
 

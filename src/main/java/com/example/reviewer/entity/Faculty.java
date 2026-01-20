@@ -7,11 +7,11 @@ import lombok.Getter;
 public enum Faculty {
     EDUCATION("教育学部"),//システム側ではEDUCATIONだが画面表示では教育学部とする。下のコードも同じようになっている
     ENGINEERING("工学部"),
-    SCIENCE("理学部"),
-    LITERATURE("文学部"),
-    ECONOMICS("経済学部"),
-    LAW("法学部"),
+    LOCAL("地域科学部"),
+    APPLIEDBIOLOGICALSCIENCE("応用生物科学部"),
+    GLOBALSYSTEM("社会システム経営学環"),
     MEDICINE("医学部"),
+    ALL("全学共通教育"),
     OTHER("その他");
 
     private final String displayName;
