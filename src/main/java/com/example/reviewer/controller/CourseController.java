@@ -69,7 +69,7 @@ public class CourseController {
         var reviews = reviewRepository.findByCourseId(id);//該当するコースに紐づく口コミ情報を取ってくる
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");//口コミの日時表示のフォーマットを指定
         List<ReviewDTO> reviewDTOList = reviews.stream()
-                .map(r -> new ReviewDTO(r.getReviewer(), r.getScore(), r.getComment(), r.getCreatedAt().format(formatter)))
+                .map(r -> new ReviewDTO(r.getId(), r.getReviewer(), r.getScore(), r.getComment(), r.getCreatedAt().format(formatter)))
                 .collect(Collectors.toList());
         model.addAttribute("reviews", reviewDTOList);//レビューDTOの情報もかごに入れる
         model.addAttribute("faculties", Faculty.values());
@@ -78,6 +78,52 @@ public class CourseController {
         model.addAttribute("averageScore", averageScore);
         model.addAttribute("reviewCount", reviews.size());
         return "course";
+    }
+
+    @GetMapping("/review/{id}/edit")
+    public String showEditReview(@PathVariable Long id, Model model) {
+        var reviewOpt = reviewRepository.findById(id);
+        if (reviewOpt.isEmpty()) {
+            return "redirect:/";
+        }
+        var review = reviewOpt.get();
+        var courseId = review.getCourse().getId();
+
+        ReviewForm form = new ReviewForm();
+        form.setReviewer(review.getReviewer());
+        form.setScore(review.getScore());
+        form.setComment(review.getComment());
+
+        model.addAttribute("reviewId", id);
+        model.addAttribute("courseId", courseId);
+        model.addAttribute("reviewForm", form);
+        return "edit_review";
+    }
+
+    @PostMapping("/review/{id}/edit")
+    public String updateReview(@PathVariable Long id,
+                               @Validated ReviewForm form,
+                               BindingResult result,
+                               Model model) {
+        var reviewOpt = reviewRepository.findById(id);
+        if (reviewOpt.isEmpty()) {
+            return "redirect:/";
+        }
+        var review = reviewOpt.get();
+        var courseId = review.getCourse().getId();
+
+        if (result.hasErrors()) {
+            model.addAttribute("reviewId", id);
+            model.addAttribute("courseId", courseId);
+            return "edit_review";
+        }
+
+        review.setReviewer(form.getReviewer());
+        review.setScore(form.getScore());
+        review.setComment(form.getComment());
+        reviewRepository.save(review);
+
+        return "redirect:/course/" + courseId;
     }
 
     @PostMapping("/course/{id}/review")//URLが/course/{id}/reviewのとき
@@ -100,7 +146,7 @@ public class CourseController {
             var reviews = reviewRepository.findByCourseId(id);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
             List<ReviewDTO> reviewDTOList = reviews.stream()
-                    .map(r -> new ReviewDTO(r.getReviewer(), r.getScore(), r.getComment(), r.getCreatedAt().format(formatter)))
+                    .map(r -> new ReviewDTO(r.getId(), r.getReviewer(), r.getScore(), r.getComment(), r.getCreatedAt().format(formatter)))
                     .collect(Collectors.toList());
             model.addAttribute("reviews", reviewDTOList);
             model.addAttribute("faculties", Faculty.values());
@@ -147,4 +193,53 @@ public class CourseController {
         courseRepository.save(course);
         return "redirect:/";
     }
+    @GetMapping("/course/{id}/edit")
+    public String showEditCourseForm(@PathVariable Long id, Model model) {
+        var courseOpt = courseRepository.findById(id);
+        if (courseOpt.isEmpty()) {
+            return "redirect:/";
+        }
+        var course = courseOpt.get();
+
+        CourseForm form = new CourseForm();
+        form.setClassName(course.getClassName());
+        form.setTeacher(course.getTeacher());
+        form.setFaculty(course.getFaculty());
+        form.setDayOfClass(course.getDayOfClass());
+        form.setDescription(course.getDescription());
+
+        model.addAttribute("id", id);
+        model.addAttribute("courseForm", form);
+        model.addAttribute("faculties", Faculty.values());
+        model.addAttribute("daysOfClass", DayOfClass.values());
+        return "edit_course";
+    }
+
+    @PostMapping("/course/{id}/edit")
+    public String updateCourse(@PathVariable Long id,
+                               @Validated CourseForm form,
+                               BindingResult result,
+                               Model model) {
+        var courseOpt = courseRepository.findById(id);
+        if (courseOpt.isEmpty()) {
+            return "redirect:/";
+        }
+        if (result.hasErrors()) {
+            model.addAttribute("id", id);
+            model.addAttribute("faculties", Faculty.values());
+            model.addAttribute("daysOfClass", DayOfClass.values());
+            return "edit_course";
+        }
+
+        var course = courseOpt.get();
+        course.setClassName(form.getClassName());
+        course.setTeacher(form.getTeacher());
+        course.setFaculty(form.getFaculty());
+        course.setDayOfClass(form.getDayOfClass());
+        course.setDescription(form.getDescription());
+        courseRepository.save(course);
+
+        return "redirect:/course/" + id;
+    }
+
 }

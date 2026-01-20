@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>レビューの編集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Noto Sans JP', sans-serif; } </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-10 px-4 flex justify-center">
+
+<div class="w-full max-w-xl bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <div class="border-b pb-4 mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">
+            <span class="text-orange-500">Edit</span> Review
+        </h1>
+        <p class="text-gray-500 text-sm mt-1">コメントと評価を修正します</p>
+    </div>
+
+    <!-- Controllerで reviewId をModelに渡している前提 -->
+    <form th:action="@{/review/{id}/edit(id=${reviewId})}" th:object="${reviewForm}" method="post" class="space-y-6">
+        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="hidden" name="courseId" th:value="${courseId}">
+
+        <!-- 名前（修正不可の場合はreadonlyをつけるが、今回は修正可能にする） -->
+        <div>
+            <label class="block text-gray-700 font-bold mb-2">お名前</label>
+            <input type="text" th:field="*{reviewer}" required
+                   class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none transition bg-gray-50 focus:bg-white">
+        </div>
+
+        <!-- スコア -->
+        <div>
+            <label class="block text-gray-700 font-bold mb-2">スコア (1-5)</label>
+            <div class="flex space-x-4">
+                <input type="number" th:field="*{score}" min="1" max="5" required
+                       class="w-24 border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none text-center font-bold text-lg">
+                <div class="flex items-center text-yellow-400 text-xl">
+                    ★★★★★
+                </div>
+            </div>
+        </div>
+
+        <!-- コメント -->
+        <div>
+            <label class="block text-gray-700 font-bold mb-2">コメント</label>
+            <textarea th:field="*{comment}" rows="4" required
+                      class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none transition bg-gray-50 focus:bg-white"></textarea>
+        </div>
+
+        <!-- ボタンエリア -->
+        <div class="flex justify-between items-center pt-4 mt-6 border-t">
+            <!-- キャンセル時は元の授業ページに戻る (ControllerからcourseIdを受け取る必要あり) -->
+            <a th:href="@{/course/{id}(id=${courseId})}" class="text-gray-500 hover:text-gray-800 font-medium transition">キャンセル</a>
+
+            <button type="submit" class="bg-orange-500 text-white font-bold py-3 px-10 rounded-full shadow-md hover:bg-orange-600 hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200">
+                更新する
+            </button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

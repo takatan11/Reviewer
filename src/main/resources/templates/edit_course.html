@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>授業情報の編集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Noto Sans JP', sans-serif; } </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-10 px-4 flex justify-center">
+
+<div class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <div class="border-b pb-4 mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">
+            <span class="text-green-600">Edit</span> Course
+        </h1>
+        <p class="text-gray-500 text-sm mt-1">授業情報を修正します</p>
+    </div>
+
+    <!-- フォーム開始 -->
+    <!-- Controllerで id をModelに渡している前提 -->
+    <form th:action="@{/course/{id}/edit(id=${id})}" method="post" th:object="${courseForm}" class="space-y-6">
+
+        <!-- 授業名 -->
+        <div>
+            <label class="block text-gray-700 font-bold mb-2">授業名 <span class="text-red-500">*</span></label>
+            <input type="text" th:field="*{className}"
+                   class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-400 outline-none transition bg-gray-50 focus:bg-white">
+            <p th:if="${#fields.hasErrors('className')}" th:errors="*{className}" class="text-red-500 text-sm mt-1"></p>
+        </div>
+
+        <!-- 先生名 -->
+        <div>
+            <label class="block text-gray-700 font-bold mb-2">先生の名前 <span class="text-red-500">*</span></label>
+            <input type="text" th:field="*{teacher}"
+                   class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-400 outline-none transition bg-gray-50 focus:bg-white">
+            <p th:if="${#fields.hasErrors('teacher')}" th:errors="*{teacher}" class="text-red-500 text-sm mt-1"></p>
+        </div>
+
+        <!-- 学部・曜日 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700 font-bold mb-2">学部 <span class="text-red-500">*</span></label>
+                <select th:field="*{faculty}" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-400 outline-none bg-white cursor-pointer">
+                    <option th:each="item : ${faculties}" th:value="${item.name()}" th:text="${item.displayName}"></option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-bold mb-2">曜日 <span class="text-red-500">*</span></label>
+                <select th:field="*{dayOfClass}" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-400 outline-none bg-white cursor-pointer">
+                    <option th:each="item : ${daysOfClass}" th:value="${item.name()}" th:text="${item.displayName}"></option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 概要 -->
+        <div>
+            <label class="block text-gray-700 font-bold mb-2">概要</label>
+            <textarea th:field="*{description}" rows="5"
+                      class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-400 outline-none transition bg-gray-50 focus:bg-white"></textarea>
+            <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-red-500 text-sm mt-1"></p>
+        </div>
+
+        <!-- ボタンエリア -->
+        <div class="flex justify-between items-center pt-4 mt-6 border-t">
+            <!-- キャンセル時は詳細画面に戻る -->
+            <a th:href="@{/course/{id}(id=${id})}" class="text-gray-500 hover:text-gray-800 font-medium transition">キャンセル</a>
+
+            <button type="submit" class="bg-green-600 text-white font-bold py-3 px-10 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200">
+                更新する
+            </button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

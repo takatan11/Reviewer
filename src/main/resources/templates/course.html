@@ -23,7 +23,13 @@
 <div class="max-w-4xl mx-auto">
     <div class="flex items-center justify-between mb-6">
         <a th:href="@{/}" class="text-sm text-blue-600 hover:text-blue-700 font-semibold">&larr; 一覧に戻る</a>
-        <h1 class="text-3xl font-bold text-gray-800" th:text="${course.className}">授業名</h1>
+        <div class="flex items-center gap-3">
+            <h1 class="text-3xl font-bold text-gray-800" th:text="${course.className}">授業名</h1>
+            <a th:href="@{/course/{id}/edit(id=${course.id})}"
+               class="text-sm px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100 hover:bg-blue-100 transition">
+                編集
+            </a>
+        </div>
     </div>
 
     <div class="bg-white shadow-sm border border-gray-100 rounded-2xl p-6 mb-10">
@@ -70,7 +76,13 @@
                     <span class="text-sm font-bold text-gray-800" th:text="${review.reviewer}">投稿者</span>
                     <span class="text-xs text-gray-400" th:text="${review.createdAt}">投稿日</span>
                 </div>
-                <span class="inline-flex items-center px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-sm font-semibold">★<span th:text="${review.score}" class="ml-1">5</span></span>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-sm font-semibold">★<span th:text="${review.score}" class="ml-1">5</span></span>
+                    <a th:href="@{/review/{id}/edit(id=${review.id})}"
+                       class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 transition">
+                        編集
+                    </a>
+                </div>
             </div>
             <p class="mt-2 text-gray-700 leading-relaxed" th:text="${review.comment}">コメント内容</p>
         </div>

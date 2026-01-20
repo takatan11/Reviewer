@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDTO {
+    private Long id;
     private String reviewer;
     private int score;
     private String comment;
